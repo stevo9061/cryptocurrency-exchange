@@ -10,12 +10,6 @@
 		"sourceMap": true,
 		"strict": true,
 		"moduleResolution": "bundler",
-		"baseUrl": ".",
-		"paths": {
-      // Wichtig: Alias für $lib
-      "$lib": ["src/lib"],
-      "$lib/*": ["src/lib/*"]
-    }
   },
   "include": [
     "src/**/*.d.ts",

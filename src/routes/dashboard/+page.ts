@@ -3,8 +3,9 @@ import type { Asset } from '$lib/types';
 
 
 export const load: PageLoad = async () => {
-    const url = 'https://api.coincap.io/v2/assets';
-    const res = await fetch(url);
+    const url = 'https://rest.coincap.io/v3/assets';
+    const apiKey = '?apiKey=fd226f6faff334c10df11dfbbd42afcc92d5f341b10282e72753a63feb14bb08';
+    const res = await fetch(url + apiKey);
     if (!res.ok) {
         throw new Error('Failed to fetch data');
     }
@@ -12,3 +13,4 @@ export const load: PageLoad = async () => {
 
     return { cryptos: data.data };
 }
+
