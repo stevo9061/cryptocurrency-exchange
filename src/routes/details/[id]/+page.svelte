@@ -1,7 +1,9 @@
 <!-- src/routes/crypto/[id]/+page.svelte -->
 <script lang="ts">
-	// Die von der Load-Funktion bereitgestellten Daten stehen als Prop "data" zur Verfügung.
-	export let data: {
+
+	// 1. Props auslesen (anstatt `export let data`)
+	let { data } = $props<{ 
+		data: {
 		crypto: {
 			id: string;
 			name: string;
@@ -16,13 +18,25 @@
 			explorer: string;
 		};
 	};
+	}>();
 
+	// 2) Rune-State für die Crypto-Daten
 	// Extrahiere den Krypto-Datensatz
-	const { crypto } = data;
-
+	const crypto  = $state(data.crypto);
 	// Felder für die Umrechnung
-	let cryptoAmount: number = 1;
-	let usdAmount: number = 0;
+	let cryptoAmount = $state(1);
+	let usdAmount = $state(0);
+
+	// 3) Effekte statt eigener Funktionen
+	$effect(() => {
+		usdAmount = cryptoAmount * crypto.priceUsd;
+	});
+	
+	$effect(() => {
+		if (crypto.value.priceUsd !== 0) {
+			cryptoAmount = usdAmount / crypto.priceUsd;
+		}
+	});
 
 	// Eine Funktion zur Formatierung, ähnlich dem Angular Number Pipe "1.2-2"
 	function formatNumber(num: number | null): string {
@@ -30,7 +44,7 @@
 		return num.toFixed(2);
 	}
 
-	// Berechnungen für die Umrechnung:
+/* 	// Berechnungen für die Umrechnung:
 	function calculateUsdFromCrypto() {
 		usdAmount = cryptoAmount * crypto.priceUsd;
 		updateConvertedCurrencies();
@@ -41,26 +55,29 @@
 			cryptoAmount = usdAmount / crypto.priceUsd;
 			updateConvertedCurrencies();
 		}
-	}
+	} */
 
-	// Beispielhafte Währungsdaten für ein Multi-Select
-	let currencies: { key: string; value: number }[] = [
+	// 4) Abgeleitete Liste mit Multi-Select und abgeleitete Conversion
+	const currencies = $state([
 		{ key: 'EUR', value: 0.92 },
 		{ key: 'GBP', value: 0.81 },
 		{ key: 'JPY', value: 134.50 }
-	];
+	]);
 
 	// Liste der aktuell ausgewählten Währungen
-	let selectedCurrencies: { key: string; value: number }[] = [];
+	let selectedCurrencies = $state<{ key: string; value: number }[]>([]);
 
-	// Berechnung der umgerechneten Werte für die ausgewählten Währungen:
-	let convertedCurrencies: { key: string; value: number }[] = [];
 
-	function updateConvertedCurrencies() {
+	// Berechnung der umgerechneten Werte für die ausgewählten Währungen
+	// Automatisch aktualisiertes Array
+	let convertedCurrencies = $derived((
+	selectedCurrencies.map(c => ({ key: c.key, value: c.value * cryptoAmount}))
+));
+/* 	function updateConvertedCurrencies() {
 		convertedCurrencies = selectedCurrencies.map(currency => {
 			return { key: currency.key, value: currency.value * cryptoAmount };
 		});
-	}
+	} */
 </script>
 
 {#if crypto}
@@ -115,7 +132,6 @@
 				<input
 					type="number"
 					bind:value={cryptoAmount}
-					on:input={calculateUsdFromCrypto}
 					placeholder={"Quantity in " + crypto.symbol}
 					class="input-field"
 				/>
@@ -125,7 +141,6 @@
 				<input
 					type="number"
 					bind:value={usdAmount}
-					on:input={calculateCryptoFromUsd}
 					placeholder="Amount in USD"
 					class="input-field"
 				/>
@@ -138,7 +153,7 @@
 	<div>
 		<label>Select currencies:</label>
 		<!-- Ein einfaches multi-select -->
-		<select multiple bind:value={selectedCurrencies} on:change={updateConvertedCurrencies}>
+		<select multiple bind:value={selectedCurrencies}>
 			{#each currencies as currency}
 				<option value={currency}>{currency.key}</option>
 			{/each}
