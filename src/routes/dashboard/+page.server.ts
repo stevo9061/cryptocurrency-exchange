@@ -2,6 +2,7 @@ import type { PageServerLoad } from './$types';
 import type { Asset } from '$lib/types';
 import { API_KEY } from '$env/static/private';
 
+
 export const load: PageServerLoad = async () => {
   const url = 'https://rest.coincap.io/v3/assets';
   const res = await fetch(`${url}?apiKey=${API_KEY}`);

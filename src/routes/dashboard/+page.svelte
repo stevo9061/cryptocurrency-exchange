@@ -4,6 +4,15 @@
     };
 </script>
 
+<form method="POST" action="/logout" class="inline-block">
+    <button
+      type="submit"
+      class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+    >
+      Logout
+    </button>
+  </form>
+
 <table class="min-w-full border-collapse">
     <thead>
         <tr class="bg-gray-100">
