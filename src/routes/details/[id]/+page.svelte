@@ -44,19 +44,6 @@
 		return num.toFixed(2);
 	}
 
-/* 	// Berechnungen für die Umrechnung:
-	function calculateUsdFromCrypto() {
-		usdAmount = cryptoAmount * crypto.priceUsd;
-		updateConvertedCurrencies();
-	}
-
-	function calculateCryptoFromUsd() {
-		if (crypto.priceUsd !== 0) {
-			cryptoAmount = usdAmount / crypto.priceUsd;
-			updateConvertedCurrencies();
-		}
-	} */
-
 	// 4) Abgeleitete Liste mit Multi-Select und abgeleitete Conversion
 	const currencies = $state([
 		{ key: 'EUR', value: 0.92 },
@@ -71,16 +58,18 @@
 	// Berechnung der umgerechneten Werte für die ausgewählten Währungen
 	// Automatisch aktualisiertes Array
 	let convertedCurrencies = $derived((
-	selectedCurrencies.map(c => ({ key: c.key, value: c.value * cryptoAmount}))
+	selectedCurrencies.map(c => ({ key: c.key, value: c.value * usdAmount}))
 ));
-/* 	function updateConvertedCurrencies() {
-		convertedCurrencies = selectedCurrencies.map(currency => {
-			return { key: currency.key, value: currency.value * cryptoAmount };
-		});
-	} */
+
 </script>
 
 {#if crypto}
+<a
+    href="/dashboard"
+    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mb-4 inline-block"
+  >
+    ← Back to Dashboard
+  </a>
 	<h1>Cryptocurrency Exchange Rate</h1>
 	<h2>This page displays detailed exchange rate information for a selected cryptocurrency.</h2>
 
@@ -89,35 +78,35 @@
 		<h2>{crypto.name} ({crypto.symbol}) Details</h2>
 		<div class="details-container">
 			<div class="detail-item">
-				<label>Current price:</label>
+				<strong>Current price:</strong>
 				<span>{formatNumber(crypto.priceUsd)} USD</span>
 			</div>
 			<div class="detail-item">
-				<label>Market capitalisation:</label>
+				<strong>Market capitalisation:</strong>
 				<span>{formatNumber(crypto.marketCapUsd)} USD</span>
 			</div>
 			<div class="detail-item">
-				<label>Number in circulation:</label>
+				<strong>Number in circulation:</strong>
 				<span>{formatNumber(crypto.supply)}</span>
 			</div>
 			<div class="detail-item">
-				<label>Maximum supply:</label>
+				<strong>Maximum supply:</strong>
 				<span>{crypto.maxSupply ? formatNumber(crypto.maxSupply) : 'Unlimited'}</span>
 			</div>
 			<div class="detail-item">
-				<label>Volume (24h):</label>
+				<strong>Volume (24h):</strong>
 				<span>{formatNumber(crypto.volumeUsd24Hr)} USD</span>
 			</div>
 			<div class="detail-item">
-				<label>Change (24h):</label>
+				<strong>Change (24h):</strong>
 				<span>{formatNumber(crypto.changePercent24Hr)} %</span>
 			</div>
 			<div class="detail-item">
-				<label>VWAP (24h):</label>
+				<strong>VWAP (24h):</strong>
 				<span>{formatNumber(crypto.vwap24Hr)}</span>
 			</div>
 			<div class="detail-item">
-				<label>Explorer:</label>
+				<strong>Explorer:</strong>
 				<a href={crypto.explorer} target="_blank">{crypto.explorer}</a>
 			</div>
 		</div>
@@ -127,9 +116,11 @@
 	<div class="crypto-calc">
 		<h3>{crypto.name} to USD Conversion</h3>
 		<div class="details-container">
+
 			<div class="detail-item">
-				<label>{crypto.name}:</label>
+				<label for="crypto-amount">{crypto.name}:</label>
 				<input
+				    id="crypto-amount"
 					type="number"
 					bind:value={cryptoAmount}
 					placeholder={"Quantity in " + crypto.symbol}
@@ -137,8 +128,9 @@
 				/>
 			</div>
 			<div class="detail-item">
-				<label>USD:</label>
+				<label for="usd-amount">USD:</label>
 				<input
+				    id="usd-amount"
 					type="number"
 					bind:value={usdAmount}
 					placeholder="Amount in USD"
@@ -151,9 +143,13 @@
 	<!-- Additional Section for Multi-select conversion -->
 	<h3>Convert to other currencies</h3>
 	<div>
-		<label>Select currencies:</label>
+		<label for="currency-select">Select currencies:</label>
 		<!-- Ein einfaches multi-select -->
-		<select multiple bind:value={selectedCurrencies}>
+		<select 
+		id="currency-select"
+		multiple
+		bind:value={selectedCurrencies}
+		>
 			{#each currencies as currency}
 				<option value={currency}>{currency.key}</option>
 			{/each}

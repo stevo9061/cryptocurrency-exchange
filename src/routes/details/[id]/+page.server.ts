@@ -1,4 +1,5 @@
-import type { PageLoad } from '../$types';
+import type { PageServerLoad } from '../$types';
+import { API_KEY } from '$env/static/private';
 
 export type Crypto = {
 	id: string;
@@ -14,19 +15,22 @@ export type Crypto = {
 	explorer: string;
 };
 
-export const load: PageLoad = async ({ params, fetch }) => {
+export const load: PageServerLoad = async ({ params, fetch }) => {
 	const id = params.id;
-	const apiKey = '?apiKey=fd226f6faff334c10df11dfbbd42afcc92d5f341b10282e72753a63feb14bb08';
-	const url = `https://rest.coincap.io/v3/assets/${id}${apiKey}`
-	console.log(`Fetching URL:`, url);
+//	const apiKey = '?apiKey=fd226f6faff334c10df11dfbbd42afcc92d5f341b10282e72753a63feb14bb08';
+//	const url = `https://rest.coincap.io/v3/assets/${id}${apiKey}`
+	const base = 'https://rest.coincap.io/v3/assets/';
+	const url = `${base}${id}?apiKey=${API_KEY}`;
 
+	console.log(`Fetching URL:`, url);
+	
+	// Fetching data from the API
 	const res = await fetch(url);
 	if (!res.ok) {
 		throw new Error('Could not load crypto details');
 	}
 	const json = await res.json();
-	// Die API liefert die Daten im Feld data
-//	const crypto: Crypto = json.data;
+	
 	
 	const data = json.data; // Original attributes are strings
 
