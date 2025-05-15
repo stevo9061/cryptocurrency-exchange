@@ -8,17 +8,17 @@
     <label for="email">E-Mail</label>
     <input id="email" name="email" type="email" required />
   
-    <label for="password">Passwort</label>
+    <label for="password">Password</label>
     <input id="password" name="password" type="password" required />
   
     <button
       type="submit"
-      class="bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded"
+      class="bg-gray-800 hover:bg-blue-700 text-white py-1 px-2 rounded"
     >
       Register
     </button>
 
     {#if data.error}
-    <p class="text-red-600"> Benutzer existiert bereits {data.error}</p>
+    <p class="text-red-600"> User already exists {data.error}</p>
   {/if}
   </form>

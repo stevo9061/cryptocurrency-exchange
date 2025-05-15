@@ -19,8 +19,10 @@
 
 </script>
 
-<nav class="bg-gray-800 text-white p-4 flex justify-between">
-	<div>My Crypto App</div>
+<nav class="bg-gray-800 text-white p-4 flex justify-center">
+	<div>
+		<h2>My Crypto App</h2>
+		
 	{#if user}
 	<div>Logged in as <strong>{user.email}</strong>
 	<form method="POST" action="/logout" class="inline">
@@ -32,11 +34,7 @@
 	</button>
 	</form>
 	</div>
-	 {:else}
-	 <div>
-		<a href="/login" class="underline mr-4">Login</a>
-		<a href="/register" class="underline">Register</a>
-	 </div>
+	
 	 {/if}
 </nav>
 

@@ -1,9 +1,17 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { validateCredentials, createSession } from '$lib/server/auth'; 
+import { getTopCryptos } from '$lib/server/crypto';
+import type { Asset } from '$lib/types';
+
 
 // kein preload nötig
-export const load: PageServerLoad = async () => ({});
+export const load: PageServerLoad = async () => {
+    // fetch Top 5 Coins
+    const cryptos: Asset[] = await getTopCryptos();
+
+    return { cryptos };
+};
 
 // Form-Action für POST /login
 export const actions: Actions = {
