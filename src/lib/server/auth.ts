@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 
 // Ein ganz einfacher In-Memory-Store für Sessions (nur für Demo Zwecke)
+// key → Session-Token (string), value → Objekt mit userId und E-Mail
 const sessions = new Map<string, { userId: string, email: string }>();
 
 // Dummy-User-DB (ebenfalls nur Demo)

@@ -17,8 +17,6 @@ export type Crypto = {
 
 export const load: PageServerLoad = async ({ params, fetch }) => {
 	const id = params.id;
-//	const apiKey = '?apiKey=fd226f6faff334c10df11dfbbd42afcc92d5f341b10282e72753a63feb14bb08';
-//	const url = `https://rest.coincap.io/v3/assets/${id}${apiKey}`
 	const base = 'https://rest.coincap.io/v3/assets/';
 	const url = `${base}${id}?apiKey=${API_KEY}`;
 

@@ -11,9 +11,12 @@ import { validateSession } from '$lib/server/auth';
 export const handle: Handle = async ({ event, resolve }) => {
     // 1. Session-Token aus Cookie auslesen
     const token = event.cookies.get('session');
+    console.log('Hook on', event.url.pathname, 'token=', event.cookies.get('session'));
+
     if (token) {
         // 2. Token validieren (z. B. in DB nachschauen)
         const user = await validateSession(token);
+        console.log('Hook validated user:', user);
         if (user) {
             // 3. Bei Erfolg wird der User in locals gespeichert
             event.locals.user = user;

@@ -1,18 +1,28 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import '../app.css';
 
-	let { children, user } = $props<{
-    user: { id: string; email: string } | null;
+
+	let { children, data } = $props<{
+		children: unknown;
+		data: {
+		    user: { id: string; email: string } | null;
+		};
 	}>();
 
+	const user = data.user;
+
+
+	onMount(() => {
+		console.log('Layout user prop:', user);
+	});
 
 </script>
 
 <nav class="bg-gray-800 text-white p-4 flex justify-between">
 	<div>My Crypto App</div>
 	{#if user}
-	<div>
-		Logged in as <strong>{user.email}</strong>
+	<div>Logged in as <strong>{user.email}</strong>
 	<form method="POST" action="/logout" class="inline">
 	<button
 		type="submit"
