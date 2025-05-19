@@ -1,33 +1,43 @@
 import { randomUUID } from 'crypto';
+import bcrypt from 'bcrypt';
 
-// Ein ganz einfacher In-Memory-Store für Sessions (nur für Demo Zwecke)
-// key → Session-Token (string), value → Objekt mit userId und E-Mail
+// Number of salt rounds (10-12 is a good compromise between safety and performance)
+const SALT_ROUNDS = 12;
+
+// A very simple in-memory store for sessions (for demo purposes only)
+// key → session token (string), value → object with userId and e-mail
 const sessions = new Map<string, { userId: string; email: string }>();
 
-// Dummy-User-DB (ebenfalls nur Demo)
-const users = new Map<string, { id: string; email: string; password: string }>();
+// Dummy user DB (also demo only)
+const users = new Map<string, { id: string; email: string; passwordHash: string }>();
 
-/** Registriert einen neuen User und gibt seine ID zurück */
+/** Registers a new user and returns their ID */
 export async function createUser(email: string, password: string): Promise<string> {
 	if ([...users.values()].some((u) => u.email === email)) {
 		throw new Error('User already exists');
 	}
+
+	// Hash the password with bcrypt
+	const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+
+	// Create User
 	const id = randomUUID();
-	users.set(id, { id, email, password }); // im Produktiv-Use würde ich hier hashen!
+	users.set(id, { id, email, passwordHash });
 	return id;
 }
 
-/** Prüft Login-Daten, gibt User-ID zurück oder null */
+/** Checks login data, returns user ID or null */
 export async function validateCredentials(email: string, password: string): Promise<string | null> {
-	for (const { id, email: e, password: pw } of users.values()) {
-		if (e === email && pw === password) {
-			return id;
-		}
-	}
-	return null;
+	// Find user by email
+	const entry = [...users.values()].find((u) => u.email === email);
+	if (!entry) return null;
+
+	// Compare hash
+	const match = await bcrypt.compare(password, entry.passwordHash);
+	return match ? entry.id : null;
 }
 
-/** Legt eine neue Session an und gibt den Session-Token zurück */
+/** Creates a new session and returns the session token */
 export async function createSession(userId: string): Promise<String> {
 	const token = randomUUID();
 	const user = users.get(userId);
@@ -36,7 +46,7 @@ export async function createSession(userId: string): Promise<String> {
 	return token;
 }
 
-/** Validiert einen Session-Token und gibt den User zurück (oder null) */
+/** Validates a session token and returns the user (or null) */
 export async function validateSession(
 	token: string
 ): Promise<{ userId: string; email: string } | null> {
