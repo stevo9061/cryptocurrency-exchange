@@ -1,27 +1,25 @@
 import type { Handle } from '@sveltejs/kit';
 import { validateSession } from '$lib/server/auth';
 
+// This hook runs for every incoming HTTP request on the server before SvelteKit processes my routes.
+// Here I read the session cookie, validate it and write the user in event.locals.user. Later, I can access event.locals.user in
+// all loads and actions.
 
-// Dieser Hook läuft für jede eingehende HTTP-Anfrage auf dem Server, bevor SvelteKit meine Routen bearbeitet. 
-// Hier lese ich das Session-Cookie aus, validiere es und schreibe den User in event.locals.user. Später kann ich in 
-// allen Loads und Aktionen auf event.locals.user zugreifen.
-
-
-// Der `handle`-Hook wird VOR allen anderen Loads/Aktionen aufgerufen
+// The `handle` hook is called before all other loads/actions
 export const handle: Handle = async ({ event, resolve }) => {
-    // 1. Session-Token aus Cookie auslesen
-    const token = event.cookies.get('session');
-    console.log('Hook on', event.url.pathname, 'token=', event.cookies.get('session'));
+	// 1. Read session token from cookie
+	const token = event.cookies.get('session');
+	console.log('Hook on', event.url.pathname, 'token=', event.cookies.get('session'));
 
-    if (token) {
-        // 2. Token validieren (z. B. in DB nachschauen)
-        const user = await validateSession(token);
-        console.log('Hook validated user:', user);
-        if (user) {
-            // 3. Bei Erfolg wird der User in locals gespeichert
-            event.locals.user = user;
-        }
-    }
-    // 4. Anfrage weiterverarbeiten lassen (z. B. zum Layout-, Page-Load, Actions etc.)
-        return await resolve(event);
+	if (token) {
+		// 2. Validate token (e.g. check in DB)
+		const user = await validateSession(token);
+		console.log('Hook validated user:', user);
+		if (user) {
+			// 3. If successful, the user is saved in locals
+			event.locals.user = user;
+		}
+	}
+	// 4. Let the request be processed further (renders the route and generates a `response`)
+	return await resolve(event);
 };

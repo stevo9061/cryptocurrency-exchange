@@ -2,8 +2,8 @@
 // for information about these interfaces
 
 interface User {
-    userId: string;
-    email: string;
+	userId: string;
+	email: string;
 }
 
 declare global {
@@ -14,10 +14,10 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 
-		    // erweitere das Default-Locals-Interface um das Feld "user"
-			interface Locals {
-				user: User | null;
-			}
+		// erweitere das Default-Locals-Interface um das Feld "user"
+		interface Locals {
+			user: User | null;
+		}
 	}
 }
 

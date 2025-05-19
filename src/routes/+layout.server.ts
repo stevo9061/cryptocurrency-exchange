@@ -1,20 +1,18 @@
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
-// Läuft pro Route serverseitig, noch bevor mein +page.server.ts oder +page.ts ausgeführt wird. Hier kann ich die 
-// Zugriffs­kontrolle (Guard) implementieren: z. B. nur eingeloggte Benutzer dürfen /dashboard oder /crypto/[id] sehen, 
-// alle anderen werden nach /login umgeleitet.
+// Runs per route on the server side, even before my +page.server.ts or +page.ts is executed. Here I can implement the access control
+// (guard): e.g. only logged-in users are allowed to see /dashboard or /crypto/[id], all others are redirected to /login.
 
-// Dieser Load läuft vor jedem Page-Load in diesem Verzeichnis (also global)
+// This load runs before every page load in this directory (i.e. globally)
 export const load: LayoutServerLoad = async ({ locals, url }) => {
-    const path = url.pathname;
+	const path = url.pathname;
 
-    // 1. Erlaube Login und Register immer
-    if (!locals.user && path !== '/login' && path !== '/register') {
-        // 2. Für alle anderen Routen: Wenn kein user in locals, redirect
-        throw redirect(302, '/login'); 
-    }
-    // 3. Gib den User an das Layout weiter (kann ich dann in +layout.svelte nutzen)
-    return { user: locals.user };
-
+	// 1. Always allow login and register
+	if (!locals.user && path !== '/login' && path !== '/register') {
+		// 2. For all other routes: If no user in locals, redirect
+		throw redirect(302, '/login');
+	}
+	// 3. Pass the user to the layout (I can then use in +layout.svelte)
+	return { user: locals.user };
 };
